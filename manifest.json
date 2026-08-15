@@ -1,0 +1,21 @@
+{
+  "name": "Nexa AI",
+  "short_name": "Nexa AI",
+  "description": "Votre assistant intelligent",
+  "start_url": "/Nexa-ai/",
+  "display": "standalone",
+  "background_color": "#faf7ff",
+  "theme_color": "#6c4bff",
+  "icons": [
+    {
+      "src": "https://ui-avatars.com/api/?name=N&background=6c4bff&color=fff&size=192&bold=true",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://ui-avatars.com/api/?name=N&background=6c4bff&color=fff&size=512&bold=true",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
