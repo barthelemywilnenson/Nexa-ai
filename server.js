@@ -1,3 +1,4 @@
+
 // Backend Nexa AI — proxy sécurisé vers l'API Gemini (Google)
 const express = require('express');
 const cors = require('cors');
@@ -27,6 +28,29 @@ function checkLimit(ip) {
   return true;
 }
 
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function callGemini(contents, attempt = 1) {
+  const response = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${API_KEY}`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ contents })
+    }
+  );
+
+  if (response.status === 429 && attempt < 4) {
+    const waitTime = attempt * 1500;
+    await sleep(waitTime);
+    return callGemini(contents, attempt + 1);
+  }
+
+  return response;
+}
+
 app.post('/api/chat', async (req, res) => {
   const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
 
@@ -48,14 +72,7 @@ app.post('/api/chat', async (req, res) => {
   }));
 
   try {
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${API_KEY}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ contents })
-      }
-    );
+    const response = await callGemini(contents);
 
     if (!response.ok) {
       const errText = await response.text();
